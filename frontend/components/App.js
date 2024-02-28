@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink, Routes, Route, useNavigate } from 'react-router-dom'
+import axiosWithAuth from '../axios/index'
 import axios from 'axios'
 import Articles from './Articles'
 import LoginForm from './LoginForm'
@@ -79,6 +80,19 @@ export default function App() {
     // If something goes wrong, check the status of the response:
     // if it's a 401 the token might have gone bad, and we should redirect to login.
     // Don't forget to turn off the spinner!
+    setMessage('')
+    setSpinnerOn(true)
+    axiosWithAuth().get('/articles')
+      .then(res => {
+        setArticles(res.data.articles)
+        setMessage(res.data.message)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setSpinnerOn(false)
+      })
   }
 
   const postArticle = article => {
@@ -86,6 +100,20 @@ export default function App() {
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
+    setMessage('')
+    setSpinnerOn(true)
+    axiosWithAuth().post('/articles', article)
+      .then(res => {
+        console.log(res)
+        setMessage(res.data.message)
+        setArticles([...articles, res.data.article])
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setSpinnerOn(false)
+      })
   }
 
   const updateArticle = ({ article_id, article }) => {
@@ -95,6 +123,20 @@ export default function App() {
 
   const deleteArticle = article_id => {
     // ✨ implement
+    setMessage('')
+    setSpinnerOn(true)
+    axiosWithAuth().delete(`/articles/${article_id}`)
+      .then(res => {
+        const newArticles = articles.filter(art => art.article_id !== article_id)
+        setMessage(res.data.message)
+        setArticles(newArticles)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setSpinnerOn(false)
+      })
   }
 
   return (
@@ -113,8 +155,8 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="articles" element={
             <>
-              <ArticleForm />
-              <Articles />
+              <ArticleForm postArticle={postArticle} currentArticleId={currentArticleId} />
+              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} />
             </>
           } />
         </Routes>
