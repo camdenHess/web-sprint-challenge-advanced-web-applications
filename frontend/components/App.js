@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink, Routes, Route, useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import Articles from './Articles'
 import LoginForm from './LoginForm'
 import Message from './Message'
@@ -16,10 +17,20 @@ export default function App() {
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
 
+  const token = localStorage.getItem('token')
+
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
-  const redirectToLogin = () => { /* ✨ implement */ }
-  const redirectToArticles = () => { /* ✨ implement */ }
+  const redirectToLogin = () => { /* ✨ implement */
+    if(!localStorage.getItem('token')) {
+      navigate('/')
+    }
+  }
+  const redirectToArticles = () => { /* ✨ implement */
+  if(localStorage.getItem('token')) {
+    navigate('/articles')
+  }
+  }
 
   const logout = () => {
     // ✨ implement
@@ -27,6 +38,11 @@ export default function App() {
     // and a message saying "Goodbye!" should be set in its proper state.
     // In any case, we should redirect the browser back to the login screen,
     // using the helper above.
+    if(token) {
+      localStorage.removeItem('token')
+      setMessage('Goodbye!')
+      redirectToLogin()
+    }
   }
 
   const login = ({ username, password }) => {
@@ -36,6 +52,22 @@ export default function App() {
     // On success, we should set the token to local storage in a 'token' key,
     // put the server success message in its proper state, and redirect
     // to the Articles screen. Don't forget to turn off the spinner!
+
+    setMessage('')
+    setSpinnerOn(true)
+    axios.post('http://localhost:9000/api/login', {username: username, password: password})
+      .then(res => {
+        console.log(res.data)
+        localStorage.setItem('token', res.data.token)
+        setMessage(res.data.message)
+        redirectToArticles()
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setSpinnerOn(false)
+      })
   }
 
   const getArticles = () => {
@@ -69,7 +101,7 @@ export default function App() {
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
     <>
       <Spinner />
-      <Message />
+      <Message message={message} />
       <button id="logout" onClick={logout}>Logout from app</button>
       <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> {/* <-- do not change this line */}
         <h1>Advanced Web Applications</h1>
@@ -78,7 +110,7 @@ export default function App() {
           <NavLink id="articlesScreen" to="/articles">Articles</NavLink>
         </nav>
         <Routes>
-          <Route path="/" element={<LoginForm />} />
+          <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="articles" element={
             <>
               <ArticleForm />
