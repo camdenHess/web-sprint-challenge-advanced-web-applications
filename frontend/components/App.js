@@ -178,7 +178,7 @@ export default function App() {
           <Route path="articles" element={
             <>
               <ArticleForm postArticle={postArticle} currentArticle={currentArticle} setCurrentArticle={setCurrentArticle} updateArticle={updateArticle} />
-              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} setCurrentArticle={setCurrentArticle} currentArticle={currentArticle} />
+              <Articles redirectToLogin={redirectToLogin} getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} setCurrentArticle={setCurrentArticle} currentArticle={currentArticle} />
             </>
           } />
         </Routes>
