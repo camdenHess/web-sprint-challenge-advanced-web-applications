@@ -122,7 +122,25 @@ export default function App() {
     // You got this!
     setMessage('')
     setSpinnerOn(true)
-    
+    axiosWithAuth().put(`/articles/${currentArticle.article_id}`, article)
+      .then(res => {
+        setMessage(res.data.message)
+        const newArticles = articles.map(art => {
+          if(art.article_id === currentArticle.article_id) {
+            return res.data.article
+          } else {
+            return art
+          }
+        })
+        setArticles(newArticles)
+        setCurrentArticle()
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setSpinnerOn(false)
+      })
   }
 
   const deleteArticle = article_id => {
