@@ -4,6 +4,6 @@ import Spinner from './Spinner'
 
 
 
-// test('sanity', () => {
-//   expect(true).toBe(false)
-// })
+test('sanity', () => {
+  expect(true).toBe(true)
+})
