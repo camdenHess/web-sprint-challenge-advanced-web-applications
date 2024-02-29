@@ -16,6 +16,7 @@ export default function App() {
   const [message, setMessage] = useState('')
   const [articles, setArticles] = useState([])
   const [currentArticleId, setCurrentArticleId] = useState()
+  const [currentArticle, setCurrentArticle] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
 
   const token = localStorage.getItem('token')
@@ -116,9 +117,12 @@ export default function App() {
       })
   }
 
-  const updateArticle = ({ article_id, article }) => {
+  const updateArticle = article => {
     // ✨ implement
     // You got this!
+    setMessage('')
+    setSpinnerOn(true)
+    
   }
 
   const deleteArticle = article_id => {
@@ -155,8 +159,8 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="articles" element={
             <>
-              <ArticleForm postArticle={postArticle} currentArticleId={currentArticleId} />
-              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} />
+              <ArticleForm postArticle={postArticle} currentArticle={currentArticle} setCurrentArticle={setCurrentArticle} updateArticle={updateArticle} />
+              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} setCurrentArticle={setCurrentArticle} currentArticle={currentArticle} />
             </>
           } />
         </Routes>
